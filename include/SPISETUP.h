@@ -8,7 +8,7 @@ struct SPISETUP {
   int channel = 0;
   int speed = 750000;
   int gdo0 = 0; // don't test, use as analog thermometer
-  int gdo2 = 24; // mode 0x06: mark the packet reception
+  int gdo2 = 25; // mode 0x06: mark the packet reception
   char text[TEXT_BUFFER_LENGTH];
 
   virtual char *toString() { // Java-style

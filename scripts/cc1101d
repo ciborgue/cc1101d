@@ -1,0 +1,3 @@
+GDO0="0"
+GDO2="25"
+DAEMON_ARGS="-j /run/${NAME}.json"

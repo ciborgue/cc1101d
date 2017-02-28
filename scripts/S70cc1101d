@@ -1,0 +1,54 @@
+#! /bin/sh
+
+. /etc/init.d/project-shell-functions
+
+NAME=$(get_script_name $0)
+load_defaults $NAME
+
+[[ -n "$MODULE_DISABLED" ]] && exit 0
+
+case "$1" in
+	start)
+		# don't make things complicated with a check but GDO2 MUST be connected
+		# as it is used to trigger hardware interrupt when the packet is received
+		report_info "Exporting GPIO pin ${GDO2} for GDO2 .. "
+		gpio unexport $GDO2
+		gpio export $GDO2 "in"
+		report_ok_fail
+
+		# GDO0 on the other hand is nearly useless for the job so it can be shut down
+		if [[ -n "$GDO0" -a "$GDO0" -ne 0 ]]; then
+			report_info "Exporting GPIO pin ${GDO0} for GDO0 .. "
+			gpio unexport $GDO0
+			gpio export $GDO0 "in"
+			report_ok_fail
+		fi
+
+		report_info "Starting $NAME: "
+		# CC1101 communicates over SPI; make sure semaphore is not
+		# locked down by some previously failed sensor process
+		# NOTE: I can't use lockf/flock to lock the SPI because
+		# spidev0.0 and spidev0.1 are different and don't share the
+		# same lock.
+		# TODO: use it for i2c-0 and i2c-1
+		rm -f /dev/shm/sem.spi
+		start-stop-daemon -S --background \
+			--pidfile /run/${NAME}.pid --make-pidfile \
+			--exec $NAME -- --gdo0 $GDO0 --gdo2 $GDO2 $DAEMON_ARGS
+		report_ok_fail
+		;;
+	stop)
+		report_info "Stopping $NAME: "
+		start-stop-daemon -K --name $NAME
+		report_ok_fail
+		;;
+	restart|reload)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|reload}" >&2
+		exit 1
+		;;
+esac

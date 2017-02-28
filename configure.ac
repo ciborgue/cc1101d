@@ -30,5 +30,6 @@ AC_DEFINE([DEFAULT_RETRY_COUNT], [32], [Default retry count])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  scripts/Makefile
 ])
 AC_OUTPUT
