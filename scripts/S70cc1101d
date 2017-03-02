@@ -5,20 +5,18 @@
 NAME=$(get_script_name $0)
 load_defaults $NAME
 
-[[ -n "$MODULE_DISABLED" ]] && exit 0
-
 case "$1" in
 	start)
 		# don't make things complicated with a check but GDO2 MUST be connected
 		# as it is used to trigger hardware interrupt when the packet is received
-		report_info "Exporting GPIO pin ${GDO2} for GDO2 .. "
+		report_info "Exporting GPIO pin ${GDO2} for GDO2 .."
 		gpio unexport $GDO2
 		gpio export $GDO2 "in"
 		report_ok_fail
 
 		# GDO0 on the other hand is nearly useless for the job so it can be shut down
 		if [[ -n "$GDO0" -a "$GDO0" -ne 0 ]]; then
-			report_info "Exporting GPIO pin ${GDO0} for GDO0 .. "
+			report_info "Exporting GPIO pin ${GDO0} for GDO0 .."
 			gpio unexport $GDO0
 			gpio export $GDO0 "in"
 			report_ok_fail
@@ -32,15 +30,23 @@ case "$1" in
 		# same lock.
 		# TODO: use it for i2c-0 and i2c-1
 		rm -f /dev/shm/sem.spi
-		start-stop-daemon -S --background \
-			--pidfile /run/${NAME}.pid --make-pidfile \
-			--exec $NAME -- --gdo0 $GDO0 --gdo2 $GDO2 $DAEMON_ARGS
+		start-stop-daemon -S --background --make-pidfile \
+			--pidfile ${PIDFILE} --exec $NAME -- $DAEMON_ARGS \
+			--gdo0 $GDO0 --gdo2 $GDO2
 		report_ok_fail
 		;;
 	stop)
 		report_info "Stopping $NAME: "
-		start-stop-daemon -K --name $NAME
+		start-stop-daemon -K --name $NAME --pidfile ${PIDFILE}
 		report_ok_fail
+		;;
+	status)
+		start-stop-daemon -K -t --name $NAME --pidfile ${PIDFILE} > /dev/null
+		if [[ $? -eq 0 ]]; then
+			report_info "$NAME is running; PID: $(cat ${PIDFILE})"
+		else
+			report_info "$NAME is NOT running"
+		fi
 		;;
 	restart|reload)
 		$0 stop
@@ -48,7 +54,7 @@ case "$1" in
 		$0 start
 		;;
 	*)
-		echo "Usage: $0 {start|stop|restart|reload}" >&2
+		echo "Usage: $0 {start|stop|status|restart|reload}" >&2
 		exit 1
 		;;
 esac
