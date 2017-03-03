@@ -218,7 +218,7 @@ skipAddition:
 			strftime(finalTimestamp, sizeof finalTimestamp,
 					"\"timestamp\": \"%FT%TZ\"", localtime(&tmstamp));
 			fprintf(json, "%s}\n", finalTimestamp); // close JSON & newline
-      fsync(fileno(json));
+			fsync(fileno(json));
 			fclose(json);
 			rename(newFile, r->jsonFileName->c_str());
 		}
@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
     };
     int c = getopt_long(argc, argv, "c:s:0:2:p:j:h", long_options, NULL);
     if (c == -1) {
-      break;
+		break;
     }
     switch (c) {
       case 'c':
@@ -272,10 +272,10 @@ int main(int argc, char *argv[]) {
         polltime = strtol(optarg, NULL, 0);
         break;
       case 'j':
-				// TODO change CC1101 to make a copy of SPISETUP
-				receivers.push_back(new Receiver(
-							new CC1101(spi, chipSetup), &semaphore, new string(optarg)));
-				break;
+		// TODO change CC1101 to make a copy of SPISETUP
+		receivers.push_back(new Receiver(
+			new CC1101(spi, chipSetup), &semaphore, new string(optarg)));
+		break;
       case 'h':
       default:
         printf("Usage: %s --polltime arg --channel arg", argv[0]);
