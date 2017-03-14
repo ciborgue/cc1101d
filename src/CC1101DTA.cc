@@ -118,7 +118,8 @@ const char *CC1101DTA::toString() {
   strncpy(text, "tm:", sizeof text);
 
   int out = strlen(text);
-  strftime(text + out, sizeof text - out, "%FT%TZ", localtime(&tmstamp));
+  strftime(text + out, sizeof text - out,
+      "\"%Y-%m-%d %T %z\"", localtime(&tmstamp));
 
   out = strlen(text);
   snprintf(text + out, sizeof text - out,
@@ -133,12 +134,12 @@ const char *CC1101DTA::toString() {
 }
 const char *CC1101DTA::toJSON() {
   snprintf(text, sizeof text,
-      "\"C1101%04X%02X%02X\": {\"timestamp\": ",
+      "\"CC1101%04X%02X%02X\": {\"timestamp\": ",
       getSensorId(), getChannel(), getRollingCode());
 
   int out = strlen(text);
   strftime(text + out, sizeof text - out,
-      "\"%FT%TZ\"", localtime(&tmstamp));
+      "\"%Y-%m-%d %T %z\"", localtime(&tmstamp));
 
   out = strlen(text);
   snprintf(text + out, sizeof text - out,

@@ -216,7 +216,7 @@ skipAddition:
 			time_t tmstamp = time(NULL);
 			char finalTimestamp[256];
 			strftime(finalTimestamp, sizeof finalTimestamp,
-					"\"timestamp\": \"%FT%TZ\"", localtime(&tmstamp));
+					"\"timestamp\": \"%Y-%m-%d %T %z\"", localtime(&tmstamp));
 			fprintf(json, "%s}\n", finalTimestamp); // close JSON & newline
 			fsync(fileno(json));
 			fclose(json);
