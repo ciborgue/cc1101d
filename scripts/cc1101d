@@ -1,3 +1,3 @@
 GDO0="0"
 GDO2="25"
-DAEMON_ARGS="--json /tmp/${NAME}.json --gdo0 $GDO0 --gdo2 $GDO2"
+DAEMON_ARGS="--gdo0 $GDO0 --gdo2 $GDO2 --json /tmp/${NAME}.json"
