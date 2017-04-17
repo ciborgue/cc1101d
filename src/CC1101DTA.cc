@@ -24,8 +24,8 @@ time_t CC1101DTA::decode() {
 	// make a temporary separate buffer for the packet hexdump
 	// this part can be taken away as the decode procedure
 	// modifies the original data
-	uint8_t packetDump[256];
-	for (int sIdx = 0; sIdx < data[0] + 1; sIdx++) {
+	uint8_t packetDump[256 * 3];
+	for (int sIdx = 0; sIdx < data[0] - 1; sIdx++) {
 		packetDump[sIdx * 3 + 0] = XDIGIT[(data[sIdx] >> 4) & 0x0f];
 		packetDump[sIdx * 3 + 1] = XDIGIT[data[sIdx] & 0x0f];
 		packetDump[sIdx * 3 + 2] = ' ';
